@@ -226,11 +226,11 @@ std::string FindeDatum(void)
 	do{
 		std::cout<<"Zu verwendendes Datum [tt.mm.yyyy \\ h \\ g \\ -[Anzahl Tage]]:";
 		std::cin>>strDatum;
-		if((strDatum[0] == 'h')||(strDatum[0] == 'g')||(strDatum[0] == '-'))
+		if((strDatum[0] == 'h')||(strDatum[0] == 'g')||(strDatum[0] == 'H')||(strDatum[0] == 'G')||(strDatum[0] == '-'))
 		{
 			time_t jetzt;
 			time(&jetzt);
-			if(strDatum[0] == 'g') jetzt -= 86400;
+			if((strDatum[0] == 'g')||(strDatum[0] == 'G')) jetzt -= 86400;
 			if(strDatum[0] == '-')
 			{
 				int tageOffset = atoi(strDatum);
