@@ -15,12 +15,6 @@ typedef struct{
 	unsigned int m_wert;
 }lstPraefix;
 
-int MAX_LST_GROESSE = 50;
-int MAX_BENUTZT = 0;
-
-void PraefixFinden(std::string, lstPraefix*);
-std::size_t PraefixEndeErmitteln(std::string dateiname, std::size_t& prfxStart);
-void PraefixListeHinzufuegen(std::string, lstPraefix*);
 std::string FindeDatum(void);
 int ObsoletenListeEinlesen(std::vector<std::string>& strListeObsolet);
 void EntferneObsoletes(std::string& strFileName, std::vector<std::string>& vObsoletenContainer);
@@ -41,98 +35,14 @@ int main(int argc, char** argv)
 	std::vector<std::string> vObsoletenContainer;
 	ObsoletenListeEinlesen(vObsoletenContainer);
 
-	lstPraefix lstPrFx[MAX_LST_GROESSE];
-	unsigned int uiMaxLstEintrag = 0;
-	for(int datNr = 1; datNr < argc; datNr++)
-	{
-		fs::path pfad(argv[datNr]);
-		if(fs::exists(pfad))
-		{
-			if(fs::is_regular_file(pfad))
-			{
-				std::vector<fs::path> v;
-				for(int i = 0; i < MAX_LST_GROESSE; i++)
-					lstPrFx[i].m_str = "";
-
-				fs::path subPfad = pfad.parent_path();
-
-				for(auto&& x : fs::directory_iterator(subPfad))
-					v.push_back(x.path());
-				for(auto&& y : v)
-				{
-					if(is_regular_file(y))
-					{
-						PraefixFinden(y.filename().generic_string(), lstPrFx);
-					}else
-					{
-						//std::cout<<y<<" ist keine Datei\n";
-					}
-				}
-			}
-		}
-		else
-		{
-			std::cout<<"Datei "<<argv[datNr]<<"existiert nicht\n";
-		}
-	}
-
 	std::string stEingabe;
-	unsigned int uiGewPrFx = -1;
+	std::cout<<"\nBitte Praefix eingeben: ";
+	std::getline(std::cin, stEingabe);
+	lstPraefix lstPrFx;
+	lstPrFx.m_str = stEingabe;
+	lstPrFx.m_wert = 0;
 
-	if(MAX_BENUTZT)
-	{
-		std::cout<<"Welches Praefix soll verwendet werden:\n\n";
-		std::cout<<"[0]: "<<"Neues Praefix\n\n";
-		for(int i = 0; i<MAX_LST_GROESSE; i++)
-		{
-			if(!lstPrFx[i].m_str.empty())
-			{
-				std::cout<<"["<<i+1<<"]: "<<lstPrFx[i].m_str<<"\n\n";
-				uiMaxLstEintrag = i;
-			}else
-				break;
-		}
-		std::cout<<"\n[Nummer\\lic]: ";
-		do
-		{
-			std::getline(std::cin, stEingabe);
-			if(stEingabe[0] == '0')
-			{
-
-				std::cout<<"\n\nNeues Praefix eingeben: ";
-				std::getline(std::cin, stEingabe);
-				lstPrFx[0].m_str = stEingabe;
-				lstPrFx[0].m_wert = 0;
-				uiGewPrFx = 0;
-				break;
-			}
-			if((stEingabe[0] <'0')||(stEingabe[0]>'9'))
-			{
-				if(stEingabe.compare("lic") == 0)
-				{
-					printLicense();
-					std::cout<<"\n[Nummer\\lic]: ";
-					continue;
-				}else{
-				std::cout<<"Vorgang abgebrochen\n";
-				system("pause");
-				return 0;
-				}
-			}
-			uiGewPrFx = stoi(stEingabe)-1;
-			if(uiMaxLstEintrag < uiGewPrFx)
-				std::cout<<"[Fehler] Bitte Zahl kleiner "<<uiMaxLstEintrag+1<<" eingeben: ";
-		}while(uiMaxLstEintrag < uiGewPrFx);
-	}else
-	{
-		std::cout<<"\nKein Praefix vorhanden\nBitte Praefix eingeben: ";
-		std::getline(std::cin, stEingabe);
-		lstPrFx[0].m_str = stEingabe;
-		lstPrFx[0].m_wert = 0;
-		uiGewPrFx = 0;
-	}
-
-	std::string strExt(lstPrFx[uiGewPrFx].m_str);
+	std::string strExt(lstPrFx.m_str);
 	std::string strDatum = FindeDatum();
 	
 	std::cout<<"\nDatumsangabe erstellt\n"<<std::flush;
@@ -202,15 +112,16 @@ int main(int argc, char** argv)
 				std::string strDir = pfad.parent_path().generic_string();
 				std::string strFileName = pfad.filename().generic_string();
 				EntferneObsoletes(strFileName, vObsoletenContainer);
-				
-				std::string neuerPfad = strDir + "/" + strDatum + strExt + " - " + strFileName;
+
+				EntferneLeerzeichen(strFileName);
+				std::string neuerPfad = strDir + "/" + strDatum + strExt + "  -  " + strFileName;
 				if(neuerPfad.length() > 255)
 				{
-					std::cout<<"Der generierte Pfad ist zu lang (> 256 Zeichen)\nBitte "<<neuerPfad.length() - 255<<" Zeichen entfernen, dann umbenennen neu starten\n";
+					std::cout<<"Der generierte Pfad ist zu lang (> 256 Zeichen)\nBitte "<<neuerPfad.length() - 255<<" Zeichen aus dem Dateinamen";
+					std::cout<<strDir<<"/"<<strFileName<<" entfernen, dann umbenennen neu starten\n";
 					system("PAUSE");
 					return 1;
 				}
-				EntferneLeerzeichen(neuerPfad);
 				fs::rename(pfad, neuerPfad);
 			}
 		}
@@ -272,64 +183,6 @@ std::string FindeDatum(void)
 		std::cout<<"Das du:rfte eigentlich nie zu sehen sein (Schleife in Datumssuche)\n";
 	}while(1);
 	return revDatum;
-}
-
-void PraefixFinden(std::string dateiname, lstPraefix* lstPrFx)
-{
-	std::string strAn("An-");
-	std::string strVon("Von-");
-	std::size_t fundStelle;
-
-	fundStelle = (dateiname).find(strAn, 0);
-	if(fundStelle != std::string::npos) /*!= std::string::npos fuer das Auffinden an beliebiger Stelle*/
-	{
-		std::size_t pos = fundStelle + strAn.length();
-		std::size_t prfxEnde = PraefixEndeErmitteln(dateiname, pos);
-		PraefixListeHinzufuegen(std::string(dateiname, fundStelle, prfxEnde - fundStelle + 1), lstPrFx);
-	}
-	fundStelle = (dateiname).find(strVon, 0);
-	if(fundStelle != std::string::npos) /*!= std::string::npos fuer das Auffinden an beliebiger Stelle*/
-	{
-		std::size_t pos = fundStelle + strVon.length();
-		std::size_t prfxEnde = PraefixEndeErmitteln(dateiname, pos);
-		PraefixListeHinzufuegen(std::string(dateiname, fundStelle, prfxEnde - fundStelle + 1), lstPrFx);
-	}
-	return;
-}
-
-void PraefixListeHinzufuegen(std::string str, lstPraefix* lstPrFx)
-{
-	for(int i = 0; i<MAX_LST_GROESSE; i++)
-	{
-		if(lstPrFx[i].m_str.empty())
-		{
-			lstPrFx[i].m_str = str;
-			MAX_BENUTZT++;
-			return;
-		}
-		if(lstPrFx[i].m_str == str)
-		{
-			/*nichts weiter machen*/
-			return;
-		}
-	}
-	return;
-}
-
-std::size_t PraefixEndeErmitteln(std::string dateiname, std::size_t& prfxStart)
-{
-	std::size_t prfxEnde = prfxStart;
-	for(size_t i = prfxStart; i < dateiname.length(); i++)
-	{
-		if((dateiname[i] != ' ')&&(dateiname[i] != '-')&&(dateiname[i] != '_'))
-		{
-			prfxEnde = i;
-		}else
-		{
-			return prfxEnde;
-		}
-	}
-	return prfxEnde;
 }
 
 int ObsoletenListeEinlesen(std::vector<std::string>& strListeObsolet)
