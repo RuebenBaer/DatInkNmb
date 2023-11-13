@@ -24,6 +24,9 @@ void printLicense(void);
 
 int main(int argc, char** argv)
 {
+	system("chcp 1252");
+	system("cls");
+	
 	std::printf("\n.: (c)Ru:bensoft 2023 - DatInkNmbV2 :.\n\n");
 	if(argc <2)
 	{
@@ -206,7 +209,7 @@ int ObsoletenListeEinlesen(std::vector<std::string>& strListeObsolet)
 	}
 	else
 	{
-		std::cout<<"Die Datei 'Obsoletenliste.txt' konnte nicht geöffnet werden!\n\n";
+		std::cout<<"Die Datei 'Obsoletenliste.txt' konnte nicht geo:ffnet werden!\n\n";
 		system("PAUSE");
 		return -1;
 	}
