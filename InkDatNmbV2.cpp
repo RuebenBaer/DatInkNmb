@@ -28,6 +28,7 @@ int main(int argc, char** argv)
 	system("cls");
 	
 	std::printf("\n.: (c)Ru:bensoft 2023 - DatInkNmbV2 :.\n\n");
+
 	if(argc <2)
 	{
 		std::cout<<"\nVerwendung: InkDatNmb.exe Datei_1 Datei_2 ...\n\n";
