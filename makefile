@@ -1,16 +1,16 @@
-CPP = "D:\mingw64\bin\g++.exe"
+CPP = "g++.exe"
 CXXFLAGS = \
 	-Wall \
 	-O2 \
 	-std=c++14 \
-	-ID:/boost_1_82_0/include/boost-1_82 \
-	-ID:/boost_1_82_0/lib
+	-I$(BOOSTDIR)\include\boost-1_82 \
+	-I$(BOOSTDIR)\lib
 
 OBJECTS = \
 	obj/InkDatNmb.o
 
 LIB = \
-	-LD:/boost_1_82_0/lib
+	-L$(BOOSTDIR)\lib
 
 BOOSTLIB = \
 	-lboost_filesystem-mgw13-mt-d-x64-1_82 \

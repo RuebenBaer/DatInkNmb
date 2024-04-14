@@ -40,8 +40,20 @@ int main(int argc, char** argv)
 	ObsoletenListeEinlesen(vObsoletenContainer);
 
 	std::string stEingabe;
-	std::cout<<"\nBitte Praefix eingeben: ";
+	std::cout<<"\nBitte Praefix eingeben\n['a' = an \\ 'v' = von \\ '*...' = beliebig]: ";
 	std::getline(std::cin, stEingabe);
+	if(stEingabe[0]=='a')
+	{
+		stEingabe = std::string("an");
+	}
+	else if(stEingabe[0]=='v')
+	{
+		stEingabe = std::string("von");
+	}
+	else if(stEingabe[0]=='*')
+	{
+		stEingabe = stEingabe.substr(1, std::string::npos);
+	}
 	lstPraefix lstPrFx;
 	lstPrFx.m_str = stEingabe;
 	lstPrFx.m_wert = 0;
