@@ -21,12 +21,20 @@ void EntferneObsoletes(std::string& strFileName, std::vector<std::string>& vObso
 void EntferneLeerzeichen(std::string& strFileName);
 void printLicense(void);
 
+std::ofstream logBuch;
 
 int main(int argc, char** argv)
 {
 	system("chcp 1252");
 	system("cls");
-	
+
+	logBuch.open("log.txt", std::ios::out|std::ios::app);
+	if(logBuch.bad())
+	{
+		std::cout<<"Logbuch konnte nicht geo:ffnet werden\n";
+		system("PAUSE");
+		return 1;
+	}
 	std::printf("\n.: (c)Ru:bensoft 2023 - DatInkNmbV2 :.\n\n");
 
 	if(argc <2)
@@ -40,11 +48,17 @@ int main(int argc, char** argv)
 	ObsoletenListeEinlesen(vObsoletenContainer);
 
 	std::string stEingabe;
-	std::cout<<"\nBitte Praefix eingeben\n['a' = an \\ 'v' = von \\ '*...' = beliebig]: ";
+	std::cout<<"\nBitte Praefix eingeben\n['a' = an \\ 'aa' = an-ALDI \\ 'v' = von \\ '*...' = beliebig]: ";
 	std::getline(std::cin, stEingabe);
 	if(stEingabe[0]=='a')
 	{
-		stEingabe = std::string("an");
+		if(stEingabe[1]=='a')
+		{
+			stEingabe = std::string("an-ALDI");
+		}else
+		{
+			stEingabe = std::string("an");
+		}
 	}
 	else if(stEingabe[0]=='v')
 	{
@@ -135,6 +149,8 @@ int main(int argc, char** argv)
 				{
 					std::cout<<"Der generierte Pfad ist zu lang (> 256 Zeichen)\nBitte "<<neuerPfad.length() - 255<<" Zeichen aus dem Dateinamen";
 					std::cout<<strDir<<"/"<<strFileName<<" entfernen, dann umbenennen neu starten\n";
+					logBuch<<"Der generierte Pfad ist zu lang (> 256 Zeichen)\nBitte "<<neuerPfad.length() - 255<<" Zeichen aus dem Dateinamen";
+					logBuch<<strDir<<"/"<<strFileName<<" entfernen, dann umbenennen neu starten\n";
 					system("PAUSE");
 					return 1;
 				}
@@ -171,16 +187,19 @@ std::string FindeDatum(void)
 		if(strlen(strDatum) != 10)
 		{
 			std::cout<<"\nDatum weist falsches Format auf!\n";
+			logBuch<<"\nDatum weist falsches Format auf!\n";
 			continue;
 		}
 		if(strDatum[2] != '.')
 		{
 			std::cout<<"\nDatum weist falsches Format auf!\n";
+			logBuch<<"\nDatum weist falsches Format auf!\n";
 			continue;
 		}
 		if(strDatum[5] != '.')
 		{
 			std::cout<<"\nDatum weist falsches Format auf!\n";
+			logBuch<<"\nDatum weist falsches Format auf!\n";
 			continue;
 		}
 		revDatum[0] = strDatum[6];
@@ -197,6 +216,7 @@ std::string FindeDatum(void)
 		std::cout<<"gedrehtes Datum: "<<revDatum<<'\n';
 		break;
 		std::cout<<"Das du:rfte eigentlich nie zu sehen sein (Schleife in Datumssuche)\n";
+		logBuch<<"Das du:rfte eigentlich nie zu sehen sein (Schleife in Datumssuche)\n";
 	}while(1);
 	return revDatum;
 }
@@ -223,7 +243,7 @@ int ObsoletenListeEinlesen(std::vector<std::string>& strListeObsolet)
 	else
 	{
 		std::cout<<"Die Datei 'Obsoletenliste.txt' konnte nicht geo:ffnet werden!\n\n";
-		system("PAUSE");
+		logBuch<<"Die Datei 'Obsoletenliste.txt' konnte nicht geo:ffnet werden!\n\n";
 		return -1;
 	}
 
