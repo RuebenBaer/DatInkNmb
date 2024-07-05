@@ -10,6 +10,10 @@
 
 namespace fs = boost::filesystem;
 
+#define ae (char)0xE4
+#define oe (char)0xF6
+#define ue (char)0xFC
+
 typedef struct{
 	std::string m_str;
 	unsigned int m_wert;
@@ -31,11 +35,11 @@ int main(int argc, char** argv)
 	logBuch.open("log.txt", std::ios::out|std::ios::app);
 	if(logBuch.bad())
 	{
-		std::cout<<"Logbuch konnte nicht geo:ffnet werden\n";
+		std::cout<<"Logbuch konnte nicht ge"<<oe<<"ffnet werden\n";
 		system("PAUSE");
 		return 1;
 	}
-	std::printf("\n.: (c)Ru:bensoft 2023 - DatInkNmbV2 :.\n\n");
+	std::cout<<"\n.: (c)R"<<ue<<"bensoft 2023 - DatInkNmbV2 :.\n\n";
 
 	if(argc <2)
 	{
@@ -50,9 +54,9 @@ int main(int argc, char** argv)
 	std::string stEingabe;
 	std::cout<<"\nBitte Praefix eingeben\n['a' = an \\ 'aa' = an-ALDI \\ 'v' = von \\ '*...' = beliebig]: ";
 	std::getline(std::cin, stEingabe);
-	if(stEingabe[0]=='a')
+	if((stEingabe[0]=='a')||(stEingabe[0]=='A'))
 	{
-		if(stEingabe[1]=='a')
+		if((stEingabe[0]=='a')||(stEingabe[0]=='A'))
 		{
 			stEingabe = std::string("an-ALDI");
 		}else
@@ -60,7 +64,7 @@ int main(int argc, char** argv)
 			stEingabe = std::string("an");
 		}
 	}
-	else if(stEingabe[0]=='v')
+	else if((stEingabe[0]=='v')||(stEingabe[0]=='V'))
 	{
 		stEingabe = std::string("von");
 	}
@@ -167,7 +171,7 @@ std::string FindeDatum(void)
 	char strDatum[11];
 	char revDatum[11];
 	do{
-		std::cout<<"Zu verwendendes Datum [tt.mm.yyyy \\ h \\ g \\ -[Anzahl Tage]]:";
+		std::cout<<"Zu verwendendes Datum [tt.mm.yyyy \\ h \\ g \\ -[Anzahl Tage]]: ";
 		std::cin>>strDatum;
 		if((strDatum[0] == 'h')||(strDatum[0] == 'g')||(strDatum[0] == 'H')||(strDatum[0] == 'G')||(strDatum[0] == '-'))
 		{
@@ -215,8 +219,8 @@ std::string FindeDatum(void)
 		revDatum[10] = '\0';
 		std::cout<<"gedrehtes Datum: "<<revDatum<<'\n';
 		break;
-		std::cout<<"Das du:rfte eigentlich nie zu sehen sein (Schleife in Datumssuche)\n";
-		logBuch<<"Das du:rfte eigentlich nie zu sehen sein (Schleife in Datumssuche)\n";
+		std::cout<<"Das d"<<ue<<"rfte eigentlich nie zu sehen sein (Schleife in Datumssuche)\n";
+		logBuch<<"Das d"<<ue<<"rfte eigentlich nie zu sehen sein (Schleife in Datumssuche)\n";
 	}while(1);
 	return revDatum;
 }
@@ -242,8 +246,8 @@ int ObsoletenListeEinlesen(std::vector<std::string>& strListeObsolet)
 	}
 	else
 	{
-		std::cout<<"Die Datei 'Obsoletenliste.txt' konnte nicht geo:ffnet werden!\n\n";
-		logBuch<<"Die Datei 'Obsoletenliste.txt' konnte nicht geo:ffnet werden!\n\n";
+		std::cout<<"Die Datei 'Obsoletenliste.txt' konnte nicht ge"<<oe<<"ffnet werden!\n\n";
+		logBuch<<"Die Datei 'Obsoletenliste.txt' konnte nicht ge"<<oe<<"ffnet werden!\n\n";
 		return -1;
 	}
 
