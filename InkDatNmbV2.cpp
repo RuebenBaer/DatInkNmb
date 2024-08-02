@@ -52,11 +52,11 @@ int main(int argc, char** argv)
 	ObsoletenListeEinlesen(vObsoletenContainer);
 
 	std::string stEingabe;
-	std::cout<<"\nBitte Praefix eingeben\n['a' = an \\ 'aa' = an-ALDI \\ 'v' = von \\ '*...' = beliebig]: ";
+	std::cout<<"\nBitte Praefix eingeben\n['a' = an \\ 'aa' = an-ALDI \\ 'v' = von \\ 'vv' = von-ALDI \\ '*...' = beliebig]: ";
 	std::getline(std::cin, stEingabe);
 	if((stEingabe[0]=='a')||(stEingabe[0]=='A'))
 	{
-		if((stEingabe[0]=='a')||(stEingabe[0]=='A'))
+		if((stEingabe[1]=='a')||(stEingabe[1]=='A'))
 		{
 			stEingabe = std::string("an-ALDI");
 		}else
@@ -66,7 +66,13 @@ int main(int argc, char** argv)
 	}
 	else if((stEingabe[0]=='v')||(stEingabe[0]=='V'))
 	{
-		stEingabe = std::string("von");
+		if((stEingabe[1]=='v')||(stEingabe[1]=='V'))
+		{
+			stEingabe = std::string("von-ALDI");
+		}else
+		{
+			stEingabe = std::string("von");
+		}
 	}
 	else if(stEingabe[0]=='*')
 	{
@@ -134,7 +140,7 @@ int main(int argc, char** argv)
 		}
 		strDatum += indexChar;
 	}
-	strDatum += " ";
+	if(strExt.length() > 0)strDatum += " ";
 	
 	for(int datNr = 1; datNr < argc; datNr++)
 	{
