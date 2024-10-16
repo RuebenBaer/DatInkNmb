@@ -50,34 +50,56 @@ int main(int argc, char** argv)
 
 	std::vector<std::string> vObsoletenContainer;
 	ObsoletenListeEinlesen(vObsoletenContainer);
+	bool indexErhoehen = true;
 
 	std::string stEingabe;
-	std::cout<<"\nBitte Praefix eingeben\n['a' = an \\ 'aa' = an-ALDI \\ 'v' = von \\ 'vv' = von-ALDI \\ '*...' = beliebig]: ";
+	
+	std::cout<<"\nBitte Pr"<<ae<<"fix eingeben\n['a' = an \\ 'aa' = an-ALDI \\ 'v' = von \\ 'vv' = von-ALDI \\ 'k' = konv \\ '*...' = beliebig]: ";
 	std::getline(std::cin, stEingabe);
-	if((stEingabe[0]=='a')||(stEingabe[0]=='A'))
+	switch(stEingabe[0])
 	{
-		if((stEingabe[1]=='a')||(stEingabe[1]=='A'))
-		{
-			stEingabe = std::string("an-ALDI");
-		}else
-		{
-			stEingabe = std::string("an");
-		}
+		case 'a':
+		case 'A':
+			switch(stEingabe[1])
+			{
+				case 'a':
+				case 'A':
+					stEingabe = std::string("an-ALDI");
+					break;
+			
+				case '\0':
+					stEingabe = std::string("an");
+					break;
+				default:
+					break;
+			}
+			break;
+		case 'v':
+		case 'V':
+			switch(stEingabe[1])
+			{
+				case 'v':
+				case 'V':
+					stEingabe = std::string("von-ALDI");
+					break;
+				case '\0':
+					stEingabe = std::string("von");
+					break;
+				default:
+					break;
+			}
+			break;
+		case 'k':
+		case 'K':
+			stEingabe = std::string("konv");
+			break;
+		case '*':
+			stEingabe = stEingabe.substr(1, std::string::npos);
+			break;
+		default:
+			break;
 	}
-	else if((stEingabe[0]=='v')||(stEingabe[0]=='V'))
-	{
-		if((stEingabe[1]=='v')||(stEingabe[1]=='V'))
-		{
-			stEingabe = std::string("von-ALDI");
-		}else
-		{
-			stEingabe = std::string("von");
-		}
-	}
-	else if(stEingabe[0]=='*')
-	{
-		stEingabe = stEingabe.substr(1, std::string::npos);
-	}
+
 	lstPraefix lstPrFx;
 	lstPrFx.m_str = stEingabe;
 	lstPrFx.m_wert = 0;
@@ -131,19 +153,27 @@ int main(int argc, char** argv)
 			}
 		}
 	}
-	
-	if(indexLen != 0)
-	{
+
+	if (indexLen != 0) {
+		std::string stIndizieren;
+		std::cout<<"\nSoll der Index erh"<<oe<<"ht werden? [j/n] ";
+		std::getline(std::cin, stIndizieren);
+		if(stIndizieren[0] == 'n') indexErhoehen = false;
+
 		for(size_t i = 0; i < indexLen-1; i++)
 		{
 			strDatum += "z";
 		}
-		strDatum += indexChar;
+		if (indexErhoehen) {
+			strDatum += indexChar;
+		}
+		else if (indexChar != 'a') {
+			strDatum += indexChar - 1;
+		}
 	}
-	if(strExt.length() > 0)strDatum += " ";
+	if (strExt.length() > 0) strDatum += " ";
 	
-	for(int datNr = 1; datNr < argc; datNr++)
-	{
+	for (int datNr = 1; datNr < argc; datNr++) {
 		fs::path pfad(argv[datNr]);
 		if(fs::exists(pfad))
 		{
@@ -174,19 +204,23 @@ int main(int argc, char** argv)
 
 std::string FindeDatum(void)
 {
-	char strDatum[11];
+	std::string strDatum;
+	char chDatum[11];
 	char revDatum[11];
 	do{
 		std::cout<<"Zu verwendendes Datum [tt.mm.yyyy \\ h \\ g \\ -[Anzahl Tage]]: ";
-		std::cin>>strDatum;
-		if((strDatum[0] == 'h')||(strDatum[0] == 'g')||(strDatum[0] == 'H')||(strDatum[0] == 'G')||(strDatum[0] == '-'))
+		std::getline(std::cin, strDatum);
+		for (int i = 0; i < 11; i++) {
+			chDatum[i] = strDatum[i];
+		}
+		if((chDatum[0] == 'h')||(chDatum[0] == 'g')||(chDatum[0] == 'H')||(chDatum[0] == 'G')||(chDatum[0] == '-'))
 		{
 			time_t jetzt;
 			time(&jetzt);
-			if((strDatum[0] == 'g')||(strDatum[0] == 'G')) jetzt -= 86400;
-			if(strDatum[0] == '-')
+			if((chDatum[0] == 'g')||(chDatum[0] == 'G')) jetzt -= 86400;
+			if(chDatum[0] == '-')
 			{
-				int tageOffset = atoi(strDatum);
+				int tageOffset = atoi(chDatum);
 				std::cout<<"tageOffset: "<<tageOffset<<"\n";
 				jetzt += tageOffset * 86400;
 			}
@@ -194,34 +228,34 @@ std::string FindeDatum(void)
 			strftime (revDatum, 11, "%Y-%m-%d", jetztStruct);
 			return revDatum;
 		}
-		if(strlen(strDatum) != 10)
+		if(strlen(chDatum) != 10)
 		{
 			std::cout<<"\nDatum weist falsches Format auf!\n";
 			logBuch<<"\nDatum weist falsches Format auf!\n";
 			continue;
 		}
-		if(strDatum[2] != '.')
+		if(chDatum[2] != '.')
 		{
 			std::cout<<"\nDatum weist falsches Format auf!\n";
 			logBuch<<"\nDatum weist falsches Format auf!\n";
 			continue;
 		}
-		if(strDatum[5] != '.')
+		if(chDatum[5] != '.')
 		{
 			std::cout<<"\nDatum weist falsches Format auf!\n";
 			logBuch<<"\nDatum weist falsches Format auf!\n";
 			continue;
 		}
-		revDatum[0] = strDatum[6];
-		revDatum[1] = strDatum[7];
-		revDatum[2] = strDatum[8];
-		revDatum[3] = strDatum[9];
+		revDatum[0] = chDatum[6];
+		revDatum[1] = chDatum[7];
+		revDatum[2] = chDatum[8];
+		revDatum[3] = chDatum[9];
 		revDatum[4] = '-';
-		revDatum[5] = strDatum[3];
-		revDatum[6] = strDatum[4];
+		revDatum[5] = chDatum[3];
+		revDatum[6] = chDatum[4];
 		revDatum[7] = '-';
-		revDatum[8] = strDatum[0];
-		revDatum[9] = strDatum[1];
+		revDatum[8] = chDatum[0];
+		revDatum[9] = chDatum[1];
 		revDatum[10] = '\0';
 		std::cout<<"gedrehtes Datum: "<<revDatum<<'\n';
 		break;
@@ -238,23 +272,21 @@ int ObsoletenListeEinlesen(std::vector<std::string>& strListeObsolet)
 	std::fstream fObsoletenDatei;
 	fObsoletenDatei.open("Obsoletenliste.txt", std::ifstream::in);
 
-	if(fObsoletenDatei.good())
-	{
-		char c[256];
-		std::string str;
-		while(!fObsoletenDatei.eof())
-		{
-			fObsoletenDatei.getline(c, 256);
-			str = c;
-			strListeObsolet.push_back(str);
-			dGroesseListe++;
-		}
-	}
-	else
+	if(!fObsoletenDatei.good())
 	{
 		std::cout<<"Die Datei 'Obsoletenliste.txt' konnte nicht ge"<<oe<<"ffnet werden!\n\n";
 		logBuch<<"Die Datei 'Obsoletenliste.txt' konnte nicht ge"<<oe<<"ffnet werden!\n\n";
 		return -1;
+	}
+
+	char c[256];
+	std::string str;
+	while(!fObsoletenDatei.eof())
+	{
+		fObsoletenDatei.getline(c, 256);
+		str = c;
+		strListeObsolet.push_back(str);
+		dGroesseListe++;
 	}
 
 	return dGroesseListe;
