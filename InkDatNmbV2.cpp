@@ -158,7 +158,7 @@ int main(int argc, char** argv)
 		std::string stIndizieren;
 		std::cout<<"\nSoll der Index erh"<<oe<<"ht werden? [j/n] ";
 		std::getline(std::cin, stIndizieren);
-		if(stIndizieren[0] == 'n') indexErhoehen = false;
+		if(stIndizieren[0] == 'n' || stIndizieren[0] == 'N') indexErhoehen = false;
 
 		for(size_t i = 0; i < indexLen-1; i++)
 		{
