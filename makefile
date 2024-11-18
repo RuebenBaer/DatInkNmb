@@ -1,4 +1,5 @@
 CPP = "g++.exe"
+CC = "gcc.exe"
 CXXFLAGS = \
 	-Wall \
 	-O2 \

@@ -6,13 +6,21 @@
 #include <boost/filesystem.hpp>
 #include <vector>
 #include <ctime>
-#include <new> 
+#include <new>
+#include <stdio.h>
+#include <stdlib.h>
 
 namespace fs = boost::filesystem;
 
 #define ae (char)0xE4
 #define oe (char)0xF6
 #define ue (char)0xFC
+
+#define MAX_N (10)
+
+int itoindex(int i, char c[], int n);
+void swap(char s[]);
+int indextoi(char s[]);
 
 typedef struct{
 	std::string m_str;
@@ -50,7 +58,6 @@ int main(int argc, char** argv)
 
 	std::vector<std::string> vObsoletenContainer;
 	ObsoletenListeEinlesen(vObsoletenContainer);
-	bool indexErhoehen = true;
 
 	std::string stEingabe;
 	
@@ -109,8 +116,9 @@ int main(int argc, char** argv)
 	
 	std::cout<<"\nDatumsangabe erstellt\n"<<std::flush;
 	
-	size_t indexLen = 0;
-	char indexChar = ' ';
+	char c, s[MAX_N];
+	int maxIndex = -1;
+	
 	for(int datNr = 1; datNr < argc; datNr++)
 	{
 		fs::path pfad(argv[datNr]);
@@ -119,6 +127,7 @@ int main(int argc, char** argv)
 		
 		std::string strPfad;
 		fs::path subPfad = pfad.parent_path();
+
 		for(auto&& x : fs::directory_iterator(subPfad))
 		{
 			fs::path pfad = x.path();
@@ -126,50 +135,32 @@ int main(int argc, char** argv)
 			{
 				strPfad = pfad.filename().generic_string();
 				size_t fundStelle = strPfad.find(strDatum, 0);
-				if(fundStelle != 0)continue;
+				if(fundStelle != 0)continue; /*strDatum steht nicht am Anfang des Dateinamens*/
 				
-				fundStelle = strPfad.find(" ", 0) - strDatum.length();
-				if(fundStelle == 0)
-				{
-					if(indexLen == 0)
-					{
-						indexChar = 'a';
-						indexLen = 1;
-					}
-					continue;
+				int i = 0;
+				int datLen = strDatum.length();
+				while ((c = strPfad[i + datLen]) != ' ' && i < MAX_N - 1) {
+					s[i++] = c;
 				}
-				if(indexLen > fundStelle)continue;
-				indexLen = fundStelle;
-				if(strPfad[strDatum.length()+indexLen-1] < 'z')
-				{
-					if(indexChar > strPfad[strDatum.length()+indexLen-1])continue;
-					indexChar = strPfad[strDatum.length()+indexLen-1] + 1;
-				}
-				else
-				{
-					indexChar = 'a';
-					indexLen++;
+				s[i] = '\0';
+				i = indextoi(s);
+				if (maxIndex < i) {
+					maxIndex = i;
 				}
 			}
 		}
 	}
 
-	if (indexLen != 0) {
+	if (maxIndex > -1) {
 		std::string stIndizieren;
 		std::cout<<"\nSoll der Index erh"<<oe<<"ht werden? [j/n] ";
 		std::getline(std::cin, stIndizieren);
-		if(stIndizieren[0] == 'n' || stIndizieren[0] == 'N') indexErhoehen = false;
+		if(stIndizieren[0] != 'n' && stIndizieren[0] != 'N') {
+			maxIndex++;
+		}
 
-		for(size_t i = 0; i < indexLen-1; i++)
-		{
-			strDatum += "z";
-		}
-		if (indexErhoehen) {
-			strDatum += indexChar;
-		}
-		else if (indexChar != 'a') {
-			strDatum += indexChar - 1;
-		}
+		itoindex(maxIndex, s, MAX_N);
+		strDatum += s;
 	}
 	if (strExt.length() > 0) strDatum += " ";
 	
@@ -326,6 +317,59 @@ void EntferneLeerzeichen(std::string& strFileName)
 		}
 	}while (dStelle != std::string::npos);
 	return;
+}
+
+
+int itoindex(int i, char s[], int n)
+{
+	if (i == 0) {
+		s[0] = '\0';
+		return 1;
+	}
+	
+	int stelle, k = 0;
+	do {
+		stelle = i % 26;
+		if (stelle == 0) {
+			stelle = 26;
+			i = i / 26 - 1;
+		}
+		else {
+			i /= 26;
+		}
+		s[k++] = stelle - 1 + 'a';
+		if (k == n && i != 0) {
+			s[k] = '\0';
+			return 1;
+		}
+	}while (i != 0);
+	s[k] = '\0';
+	swap(s);
+	return 0;
+}
+
+void swap(char s[])
+{
+	int i, n = 0, c;
+	while (s[n] != '\0') n++;
+	for (i = 0; i < n / 2; i++) {
+		c = s[i];
+		s[i] = s[n - i - 1];
+		s[n - i - 1] = c;
+	}
+	return;
+}
+
+int indextoi(char s[])
+{
+	int i = 0, c, retVal = 0;
+	while ((c = s[i]) != '\0') {
+		if (c >= 'a' && c <= 'z') {
+			retVal = retVal * 26 + c - 'a' + 1;
+		}
+		i++;
+	}
+	return retVal;
 }
 
 void printLicense(void)
