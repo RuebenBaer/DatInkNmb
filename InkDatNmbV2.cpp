@@ -27,6 +27,7 @@ typedef struct{
 	unsigned int m_wert;
 }lstPraefix;
 
+void printHilfe(void);
 std::string FindeDatum(void);
 int ObsoletenListeEinlesen(std::vector<std::string>& strListeObsolet);
 void EntferneObsoletes(std::string& strFileName, std::vector<std::string>& vObsoletenContainer);
@@ -61,7 +62,9 @@ int main(int argc, char** argv)
 
 	std::string stEingabe;
 	
-	std::cout<<"\nBitte Pr"<<ae<<"fix eingeben\n['a' = an \\ 'aa' = an-ALDI \\ 'v' = von \\ 'vv' = von-ALDI \\ 'k' = konv \\ '*...' = beliebig]: ";
+	nochmal:
+	
+	std::cout<<"\nBitte Pr"<<ae<<"fix eingeben [? f"<<ue<<"r Hilfe]: ";
 	std::getline(std::cin, stEingabe);
 	switch(stEingabe[0])
 	{
@@ -72,6 +75,11 @@ int main(int argc, char** argv)
 				case 'a':
 				case 'A':
 					stEingabe = std::string("an-ALDI");
+					break;
+				
+				case 'g':
+				case 'G':
+					stEingabe = std::string("an-G") + oe + "rtz";
 					break;
 			
 				case '\0':
@@ -85,10 +93,16 @@ int main(int argc, char** argv)
 		case 'V':
 			switch(stEingabe[1])
 			{
-				case 'v':
-				case 'V':
+				case 'a':
+				case 'A':
 					stEingabe = std::string("von-ALDI");
 					break;
+				
+				case 'g':
+				case 'G':
+					stEingabe = std::string("von-G") + oe + "rtz";
+					break;
+				
 				case '\0':
 					stEingabe = std::string("von");
 					break;
@@ -102,6 +116,10 @@ int main(int argc, char** argv)
 			break;
 		case '*':
 			stEingabe = stEingabe.substr(1, std::string::npos);
+			break;
+		case '?':
+			printHilfe();
+			goto nochmal;
 			break;
 		default:
 			break;
@@ -185,12 +203,25 @@ int main(int argc, char** argv)
 					system("PAUSE");
 					return 1;
 				}
-				fs::rename(pfad, neuerPfad);
+				try {
+					fs::rename(pfad, neuerPfad);
+				}
+				catch (...) {
+					std::cout << "Ein Fehler beim Umbenennen ist aufgetreten (Datei evtl. verschoben, ge" << oe << "ffnet etc.?)";
+					std::cout << "\n\nBetroffene Datei:\n" << pfad << "\n\n";
+					system("PAUSE");
+					continue;
+				}
 			}
 		}
 	}
 
 	return 0;
+}
+
+void printHilfe(void) {
+	std::cout<<"M"<<oe<<"gliche K"<<ue<<"rzel:\n\n'a'\tan\n'aa'\tan-ALDI\n'ag'\tan-G"<<oe<<"rtz\n'v'\tvon\n'vv'\tvon-ALDI\n'vg'\tvon-G"<<oe<<"rtz\n'k'\tkonv\n'*...'\tbeliebig\n\n";
+	return;
 }
 
 std::string FindeDatum(void)
@@ -307,8 +338,11 @@ void EntferneObsoletes(std::string& strFileName, std::vector<std::string>& vObso
 void EntferneLeerzeichen(std::string& strFileName)
 {
 	size_t dStelle;
-	do
-	{
+	while (strFileName[0] == ' ') {
+		strFileName.erase(0, (size_t)1);
+	}
+	
+	do {
 		dStelle = strFileName.find("  ", 0);
 
 		if(dStelle != std::string::npos)
