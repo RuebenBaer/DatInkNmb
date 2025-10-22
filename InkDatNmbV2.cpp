@@ -102,6 +102,11 @@ int main(int argc, char** argv)
 				case 'G':
 					stEingabe = std::string("von-G") + oe + "rtz";
 					break;
+					
+				case 't':
+				case 'T':
+					stEingabe = std::string("Verteiler");
+					break;
 				
 				case '\0':
 					stEingabe = std::string("von");
@@ -220,7 +225,16 @@ int main(int argc, char** argv)
 }
 
 void printHilfe(void) {
-	std::cout<<"M"<<oe<<"gliche K"<<ue<<"rzel:\n\n'a'\tan\n'aa'\tan-ALDI\n'ag'\tan-G"<<oe<<"rtz\n'v'\tvon\n'vv'\tvon-ALDI\n'vg'\tvon-G"<<oe<<"rtz\n'k'\tkonv\n'*...'\tbeliebig\n\n";
+	std::cout<<"M"<<oe<<"gliche K"<<ue<<"rzel:\n\n";
+	std::cout<<"'a'\tan\n";
+	std::cout<<"'aa'\tan-ALDI\n";
+	std::cout<<"'ag'\tan-G"<<oe<<"rtz\n";
+	std::cout<<"'v'\tvon\n";
+	std::cout<<"'vv'\tvon-ALDI\n";
+	std::cout<<"'vg'\tvon-G"<<oe<<"rtz\n";
+	std::cout<<"'k'\tkonv\n";
+	std::cout<<"'vt'\tVerteiler\n";
+	std::cout<<"'*...'\tbeliebig\n\n";
 	return;
 }
 
